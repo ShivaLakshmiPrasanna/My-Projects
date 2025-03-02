@@ -1,0 +1,91 @@
+Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+
+You may assume that each input would have exactly one solution, and you may not use the same element twice.
+
+You can return the answer in any order.
+
+ 
+
+Example 1:
+
+Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
+Example 2:
+
+Input: nums = [3,2,4], target = 6
+Output: [1,2]
+Example 3:
+
+Input: nums = [3,3], target = 6
+Output: [0,1]
+ 
+
+Constraints:
+
+2 <= nums.length <= 104
+-109 <= nums[i] <= 109
+-109 <= target <= 109
+Only one valid answer exists.
+
+
+
+
+
+    /**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+ typedef struct {
+    int key;
+    int value;
+ } HashEntry;
+
+ int hashfunction(int key, int size){
+    return (abs(key%size));
+ }
+ void insert(HashEntry* Hashtable[], int key,int value, int size){
+    int index = hashfunction(key,size);
+
+    while(Hashtable[index] != NULL) {
+        index = (index + 1)%size; //linear probing
+    }
+
+    Hashtable[index] = (HashEntry* )malloc(sizeof(HashEntry* ));
+    Hashtable[index]->key = key;
+    Hashtable[index]->value = value;
+
+ }
+ int search(HashEntry* hashTable[], int key, int size) {
+    int index = hashfunction(key, size);
+    while (hashTable[index] != NULL) {
+        if (hashTable[index]->key == key)
+            return hashTable[index]->value;
+        index = (index + 1) % size;
+    }
+    return -1; // Not found
+}
+int* twoSum(int* nums, int numsSize, int target, int* returnSize) {
+    int *val = (int*)malloc((2)*sizeof(int));
+    int i,j;
+    int hashSize = numsSize*2;
+    HashEntry* hashTable[hashSize];
+
+     *returnSize = 2;
+     for (int i = 0; i < hashSize; i++)
+        hashTable[i] = NULL; // Initialize hash table
+
+    for(i=0;i<numsSize;i++) {
+        int complement = target - nums[i];
+        int index = search(hashTable, complement, hashSize);
+
+            if(index != -1) {
+                val[0] = i;
+                val[1] = index;
+                break;
+            }
+        insert(hashTable, nums[i], i, hashSize);
+    }
+    return val;
+}
+
+
